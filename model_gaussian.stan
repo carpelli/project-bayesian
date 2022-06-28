@@ -13,9 +13,9 @@ data {
   real<lower=0> sigma_beta;   // feature sd prior
 }
 parameters {
-  simplex[C] theta;                  // category prevalence
-  real mu[C, K];  // feature parameter distribution
-  real<lower=0> sigma[C, K];  // feature parameter distribution
+  simplex[C] theta;           // category prevalence
+  real mu[C, K];              // feature mean distribution
+  real<lower=0> sigma[C, K];  // feature sd distribution
 }
 transformed parameters {
   real<lower=0> sigma_squared[C, K];
@@ -26,14 +26,17 @@ transformed parameters {
   }
 }
 model {
+  // priors
   theta ~ dirichlet(alpha);
   for (c in 1:C) {
     for (k in 1:K) {
       mu[c, k] ~ normal(mu_mu, mu_sigma);
-      if (sigma_alpha > 0 && sigma_beta > 0)
+      if (sigma_alpha > 0 && sigma_beta > 0) // if these values are zero we don't specify a prior
         sigma_squared[c, k] ~ inv_gamma(sigma_alpha, sigma_beta);
     }
   }
+
+  //data
   for (n in 1:N) {
     y[n] ~ categorical(theta);
   }

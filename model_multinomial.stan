@@ -19,10 +19,13 @@ parameters {
   simplex[V] phi[K];            // word dist for topic k
 }
 model {
+  // priors
   theta ~ dirichlet(alpha);
   for (k in 1:K) {
     phi[k] ~ dirichlet(beta);
   }
+
+  // data
   for (m in 1:M) {
     z[m] ~ categorical(theta);
   }

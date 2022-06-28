@@ -14,12 +14,15 @@ parameters {
   real<lower=0, upper=1> phi[C, K];  // feature parameter distribution
 }
 model {
+  // priors
   theta ~ dirichlet(alpha);
   for (c in 1:C) {
     for (k in 1:K) {
       phi[c, k] ~ beta(beta[c, k], beta[c, k]);
     }
   }
+
+  // data
   for (n in 1:N) {
     y[n] ~ categorical(theta);
   }
