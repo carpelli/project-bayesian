@@ -1,3 +1,6 @@
 /lit
+/build
+/.vscode
+/venv
 
 .DS_Store
