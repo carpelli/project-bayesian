@@ -1,10 +1,10 @@
 data {
   // training data
-  int<lower=1> C;             // num categories
-  int<lower=1> K;             // num features
-  int<lower=1> N;             // num samples
-  int<lower=1, upper=C> y[N]; // category of sample n
-  real x[N, K];               // sample n
+  int<lower=1> C;                   // num categories
+  int<lower=1> K;                   // num features
+  int<lower=1> N;                   // num samples
+  array[N] int<lower=1, upper=C> y; // category of sample n
+  array[N, K] real x;                     // sample n
   // hyperparameters
   vector<lower=0>[C] alpha;   // category prior
   real mu_mu;                 // feature mean prior
@@ -13,12 +13,12 @@ data {
   real<lower=0> sigma_beta;   // feature sd prior
 }
 parameters {
-  simplex[C] theta;           // category prevalence
-  real mu[C, K];              // feature mean distribution
-  real<lower=0> sigma[C, K];  // feature sd distribution
+  simplex[C] theta;                 // category prevalence
+  array[C, K] real mu;              // feature mean distribution
+  array[C, K] real<lower=0> sigma;  // feature sd distribution
 }
 transformed parameters {
-  real<lower=0> sigma_squared[C, K];
+  array[C, K] real <lower=0> sigma_squared;
   for (c in 1:C) {
     for (k in 1:K) {
       sigma_squared[c, k] = sigma[c, k]^2;

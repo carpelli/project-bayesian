@@ -1,24 +1,24 @@
 data {
   // training data
-  int<lower=1> C;                 // num categories
-  int<lower=1> K;                 // num features
-  int<lower=1> N;                 // num samples
-  int<lower=1, upper=C> y[N];     // category of sample n
-  int<lower=0, upper=1> x[N, K];  // sample n
+  int<lower=1> C;                       // num categories
+  int<lower=1> K;                       // num features
+  int<lower=1> N;                       // num samples
+  array[N] int<lower=1, upper=C> y;     // category of sample n
+  array[N, K] int<lower=0, upper=1> x;  // sample n
   // hyperparameters
-  vector<lower=0>[C] alpha;       // category prior
-  real<lower=0> beta[C, K];       // feature prior
+  vector<lower=0>[C] alpha;        // category prior
+  array[K, 2] real<lower=0> beta;  // feature prior
 }
 parameters {
-  simplex[C] theta;                  // category prevalence
-  real<lower=0, upper=1> phi[C, K];  // feature parameter distribution
+  simplex[C] theta;                        // category prevalence
+  array[C, K] real<lower=0, upper=1> phi;  // feature parameter distribution
 }
 model {
   // priors
   theta ~ dirichlet(alpha);
   for (c in 1:C) {
     for (k in 1:K) {
-      phi[c, k] ~ beta(beta[c, k], beta[c, k]);
+      phi[c, k] ~ beta(beta[k, 1], beta[k, 2]);
     }
   }
 
