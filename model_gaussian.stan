@@ -4,7 +4,7 @@ data {
   int<lower=1> K;                   // num features
   int<lower=1> N;                   // num samples
   array[N] int<lower=1, upper=C> y; // category of sample n
-  array[N, K] real x;                     // sample n
+  array[N, K] real x;               // sample n
   // hyperparameters
   vector<lower=0>[C] alpha;   // category prior
   real mu_mu;                 // feature mean prior
@@ -19,6 +19,9 @@ parameters {
 }
 transformed parameters {
   array[C, K] real <lower=0> sigma_squared;
+  // since the variance is distributed accoring to an inverse gamma
+  // distribution, we have to define sigma_squared as a transformed
+  // parameter so that we can relate sigma to its prior distribution
   for (c in 1:C) {
     for (k in 1:K) {
       sigma_squared[c, k] = sigma[c, k]^2;
@@ -28,11 +31,12 @@ transformed parameters {
 model {
   // priors
   theta ~ dirichlet(alpha);
+  // for every class and every feature, we let the mu follow the normal distribution
+  // and the sigma_squared follow the sigma squared distribution
   for (c in 1:C) {
     for (k in 1:K) {
       mu[c, k] ~ normal(mu_mu, mu_sigma);
-      if (sigma_alpha > 0 && sigma_beta > 0) // if these values are zero we don't specify a prior
-        sigma_squared[c, k] ~ inv_gamma(sigma_alpha, sigma_beta);
+      sigma_squared[c, k] ~ inv_gamma(sigma_alpha, sigma_beta);
     }
   }
 

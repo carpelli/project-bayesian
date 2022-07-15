@@ -16,6 +16,7 @@ parameters {
 model {
   // priors
   theta ~ dirichlet(alpha);
+  // we define a beta prior for phi for every feature and every class
   for (c in 1:C) {
     for (k in 1:K) {
       phi[c, k] ~ beta(beta[k, 1], beta[k, 2]);
@@ -26,6 +27,8 @@ model {
   for (n in 1:N) {
     y[n] ~ categorical(theta);
   }
+  // loop over every sample and every feature to let them
+  // follow the distribution defined by the phi for that class
   for (n in 1:N) {
     for (k in 1:K) {
       x[n, k] ~ bernoulli(phi[y[n], k]);

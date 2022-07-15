@@ -26,6 +26,8 @@ model {
   }
 
   // data
+  // both the document topics and the specific words
+  // follow the categorical distribution
   for (m in 1:M) {
     z[m] ~ categorical(theta);
   }
